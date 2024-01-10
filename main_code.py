@@ -2,7 +2,7 @@ import pygame
 import os
 import sys
 
-class Board:
+class Room:
     def __init__(self):
         self.width = 7
         self.height = 7
@@ -13,20 +13,24 @@ class Board:
         self.screen = pygame.Surface((700, 750))
         self.sprites = pygame.sprite.Group()
 
-        self.sus = pygame.sprite.Group()
-        sprite01 = pygame.sprite.Sprite()
-        sprite01.image = load_image("suslik.png")
-        sprite01.rect = sprite01.image.get_rect()
-        sprite01.rect.x = self.coords(0, 6)[0]
-        sprite01.rect.y = self.coords(0, 6)[1]
-        self.sus.add(sprite01)
-        self.pla = pygame.sprite.Group()
-        sprite02 = pygame.sprite.Sprite()
-        sprite02.image = load_image("player.png")
-        sprite02.rect = sprite02.image.get_rect()
-        sprite02.rect.x = self.coords(0, 6)[0]
-        sprite02.rect.y = self.coords(0, 6)[1]
-        self.pla.add(sprite02)
+        self.sus_gr = pygame.sprite.Group()
+        self.sus = pygame.sprite.Sprite()
+        self.sus.image = load_image("suslik.png")
+        self.sus.rect = self.sus.image.get_rect()
+        self.sus.rect.x = self.coords(0, 6)[0]
+        self.sus.rect.y = self.coords(0, 6)[1]
+        self.sus_gr.add(self.sus)
+        self.pla_gr = pygame.sprite.Group()
+        self.pla = pygame.sprite.Sprite()
+        self.pla.image = load_image("player.png")
+        self.pla.rect = self.pla.image.get_rect()
+        self.pla.rect.x = self.coords(0, 6)[0]
+        self.pla.rect.y = self.coords(0, 6)[1]
+        self.pla_gr.add(self.pla)
+        self.cor_bord = []
+        for i in range(0, 7):
+            for j in range(0, 7):
+                self.cor_bord.append((i, j))
 
     def set_view(self, left, top, cell_size):
         self.left = left
@@ -42,9 +46,27 @@ class Board:
     
     def coords(self, i, j):
         return i * 100, 50 + j * 100
+    
+    def is_near(self, i1, j1, i2, j2):
+        if i1 == i2:
+            return j1 == j2 + 1 or j1 == j2 - 1
+        if j1 == j2:
+            return i1 == i2 + 1 or i1 == i2 - 1
+        return False
+    
+    def draw_room(self, screen):
+        for i in range(len(self.board[0])):
+            for j in range(len(self.board)):
+                x1 = self.left + self.cell_size * i
+                y1 = self.top + self.cell_size * j
+                w, h = self.cell_size, self.cell_size
+                pygame.draw.rect(screen, (0, 0, 0), ((x1, y1), (w, h)), 1)
+        self.sprites.draw(screen)
+        self.sus_gr.draw(screen)
+        self.pla_gr.draw(screen)
 
 
-class Hall(Board):
+class Hall(Room):
     def __init__(self):
         super().__init__()
         sprite1 = pygame.sprite.Sprite()
@@ -90,13 +112,11 @@ class Hall(Board):
         sprite7.rect.y = self.coords(6, 2)[1]
         self.sprites.add(sprite7)
         self.sprites.draw(self.screen)
-
-        
-    def open_cell(self, i, j):
-        pass
+        self.busy = [(3, 0), (6, 2), (0, 3), (4, 5), (0, 6), (1, 6), (3, 6), (4, 6)]
+        self.doors = {(3, 0): ((3, 5), 'corridor'), (3, 6): ((0, 0), 'finish'), (0, 3): ((5, 3), 'bathroom'), (6, 2): ((1, 2), 'store')}
 
 
-class Bedroom(Board):
+class Bedroom(Room):
     def __init__(self):
         super().__init__()
         sprite1 = pygame.sprite.Sprite()
@@ -130,12 +150,14 @@ class Bedroom(Board):
         sprite4.rect.y = self.coords(3, 6)[1]
         self.sprites.add(sprite4)
         self.sprites.draw(self.screen)
+        self.busy = [(0, 0), (1, 0), (3, 3), (4, 3), (2, 4), (6, 4), (6, 5), (3, 6)]
+        self.doors = {(3, 6): ((3, 1), 'corridor')}
     
     def render():
         pass
 
 
-class Corridor(Board):
+class Corridor(Room):
     def __init__(self):
         super().__init__()
         sprite1 = pygame.sprite.Sprite()
@@ -181,12 +203,14 @@ class Corridor(Board):
         sprite7.rect.y = self.coords(3, 6)[1]
         self.sprites.add(sprite7)
         self.sprites.draw(self.screen)
+        self.busy = [(3, 0), (5, 0), (6, 0), (0, 1), (6, 3), (0, 4), (3, 6), (6, 6)]
+        self.rooms = {(3, 0): ((3, 5), 'bedroom'), (3, 6): ((3, 1), 'hall'), (0, 1): ((5, 1), 'kitchen'), (6, 3): ((0, 3), 'bathroom')}
     
     def render():
         pass
 
 
-class Bathroom(Board):
+class Bathroom(Room):
     def __init__(self):
         super().__init__()
         sprite1 = pygame.sprite.Sprite()
@@ -220,12 +244,14 @@ class Bathroom(Board):
         sprite4.rect.y = self.coords(0, 3)[1]
         self.sprites.add(sprite4)
         self.sprites.draw(self.screen)
+        self.busy = [(0, 3), (1, 6), (2, 6), (3, 4), (4, 1), (4, 2), (5, 1), (5, 2), (5, 6)]
+        self.doors = {(0, 3): ((5, 3), 'corridor')}
     
     def render():
         pass
 
 
-class Kitchen(Board):
+class Kitchen(Room):
     def __init__(self):
         super().__init__()
         sprite1 = pygame.sprite.Sprite()
@@ -265,12 +291,14 @@ class Kitchen(Board):
         sprite4.rect.y = self.coords(6, 1)[1]
         self.sprites.add(sprite4)
         self.sprites.draw(self.screen)
+        self.busy = [(0, 0), (1, 2), (2, 0), (2, 2), (3, 0), (3, 2), (4, 0), (4, 2), (5, 0), (5, 6), (6, 0), (6, 1), (6, 6)]
+        self.doors = {(6, 1): ((1, 1), 'corridor')}
     
     def render():
         pass
 
 
-class Livingroom(Board):
+class Livingroom(Room):
     def __init__(self):
         super().__init__()
         sprite1 = pygame.sprite.Sprite()
@@ -304,12 +332,14 @@ class Livingroom(Board):
         sprite4.rect.y = self.coords(6, 3)[1]
         self.sprites.add(sprite4)
         self.sprites.draw(self.screen)
+        self.busy = [(0, 0), (0, 6), (1, 0), (1, 6), (2, 0), (2, 2), (4, 0), (6, 3)]
+        self.doors = {(6, 3): ((1, 3), 'hall')}
     
     def render():
         pass
 
 
-class Store(Board):
+class Store(Room):
     def __init__(self):
         super().__init__()
         sprite1 = pygame.sprite.Sprite()
@@ -355,6 +385,8 @@ class Store(Board):
         sprite7.rect.y = self.coords(5, 0)[1]
         self.sprites.add(sprite7)
         self.sprites.draw(self.screen)
+        self.busy = [(0, 2), (2, 1), (3, 4), (4, 0), (4, 1), (4, 6), (5, 0), (5, 1), (5, 6), (6, 0), (6, 1), (6, 4)]
+        self.doors = {(0, 2): ((5, 2), 'hall')}
     
     def render():
         pass
@@ -362,10 +394,11 @@ class Store(Board):
 
 class Start:
     def __init__(self):
-        self.screen = pygame.Surface((750, 750))
-        font = pygame.font.Font(None, 15)
-        text = font.render(str(self.board[j][i]), True, (0, 255, 0))
-        screen.blit(text, (x1 + 3, y1 + 3))
+        pass
+        #self.screen = pygame.Surface((750, 750))
+        #font = pygame.font.Font(None, 15)
+        #text = font.render(str(self.board[j][i]), True, (0, 255, 0))
+        #screen.blit(text, (x1 + 3, y1 + 3))
 
 
 class Finish:
@@ -393,18 +426,52 @@ rooms = [start, finish, hall, bedroom, corridor, bathroom, kitchen, livingroom, 
 for room in rooms[2:]:
     room.set_view(0, 50, 100)
 running = True
-room = start
-room = 0
+room = bedroom # для теста
+pos_mouse = 0, 0
+pos_pla = 1, 1
+pos_sus = 3, 5
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            try:
-                x, y = board_life.get_cell(event.pos)
-                board_life.open_cell(x, y)
-            except Exception:
-                pass
+        if room == start:
+            pass
+        elif room == finish:
+            pass
+        else:
+            if event.type == pygame.MOUSEMOTION:
+                pos_mouse = event.pos
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and room.get_cell(pos_mouse):
+                if room.is_near(pos_mouse[0], pos_mouse[1], pos_pla[0], pos_pla[1]) and pos_mouse in room.busy:
+                    x_mou, y_mou = room.get_cell(pos_mouse)
+                    if (x_mou, y_mou) not in room.doors:
+                        pass
+                    else:
+                        pass
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
+                new_x, new_y = pos_pla[0], pos_pla[1] - 1
+                if (new_x, new_y) not in room.busy and (new_x, new_y) in room.cor_bord:
+                    pos_pla = (new_x, new_y)
+                    room.pla.rect.x = room.coords(new_x, new_y)[0]
+                    room.pla.rect.y = room.coords(new_x, new_y)[1]
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
+                new_x, new_y = pos_pla[0], pos_pla[1] + 1
+                if (new_x, new_y) not in room.busy and (new_x, new_y) in room.cor_bord:
+                    pos_pla = (new_x, new_y)
+                    room.pla.rect.x = room.coords(new_x, new_y)[0]
+                    room.pla.rect.y = room.coords(new_x, new_y)[1]
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
+                new_x, new_y = pos_pla[0] - 1, pos_pla[1]
+                if (new_x, new_y) not in room.busy and (new_x, new_y) in room.cor_bord:
+                    pos_pla = (new_x, new_y)
+                    room.pla.rect.x = room.coords(new_x, new_y)[0]
+                    room.pla.rect.y = room.coords(new_x, new_y)[1]
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
+                new_x, new_y = pos_pla[0] + 1, pos_pla[1]
+                if (new_x, new_y) not in room.busy and (new_x, new_y) in room.cor_bord:
+                    pos_pla = (new_x, new_y)
+                    room.pla.rect.x = room.coords(new_x, new_y)[0]
+                    room.pla.rect.y = room.coords(new_x, new_y)[1]
     screen.fill((255, 255, 255))
-    screen.blit(room.screen)
+    room.draw_room(screen)
     pygame.display.flip()
