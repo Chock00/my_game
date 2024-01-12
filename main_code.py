@@ -6,7 +6,7 @@ class Room:
     def __init__(self):
         self.width = 7
         self.height = 7
-        self.board = [[0] * width for _ in range(height)]
+        self.board = [[0] * self.width for _ in range(self.height)]
         self.left = 0
         self.top = 50
         self.cell_size = 100
@@ -17,15 +17,15 @@ class Room:
         self.sus = pygame.sprite.Sprite()
         self.sus.image = load_image("suslik.png")
         self.sus.rect = self.sus.image.get_rect()
-        self.sus.rect.x = self.coords(0, 6)[0]
-        self.sus.rect.y = self.coords(0, 6)[1]
+        self.sus.rect.x = self.coords(2, 3)[0]
+        self.sus.rect.y = self.coords(2, 3)[1]
         self.sus_gr.add(self.sus)
         self.pla_gr = pygame.sprite.Group()
         self.pla = pygame.sprite.Sprite()
         self.pla.image = load_image("player.png")
         self.pla.rect = self.pla.image.get_rect()
-        self.pla.rect.x = self.coords(0, 6)[0]
-        self.pla.rect.y = self.coords(0, 6)[1]
+        self.pla.rect.x = self.coords(1, 1)[0]
+        self.pla.rect.y = self.coords(1, 1)[1]
         self.pla_gr.add(self.pla)
         self.cor_bord = []
         for i in range(0, 7):
@@ -54,7 +54,7 @@ class Room:
             return i1 == i2 + 1 or i1 == i2 - 1
         return False
     
-    def draw_room(self, screen):
+    def draw_room(self, screen):  
         for i in range(len(self.board[0])):
             for j in range(len(self.board)):
                 x1 = self.left + self.cell_size * i
@@ -322,8 +322,8 @@ class Livingroom(Room):
         sprite5 = pygame.sprite.Sprite()
         sprite5.image = load_image("tumba_liv.jpg")
         sprite5.rect = sprite5.image.get_rect()
-        sprite5.rect.x = self.coords(0, 4)[0]
-        sprite5.rect.y = self.coords(0, 4)[1]
+        sprite5.rect.x = self.coords(4, 0)[0]
+        sprite5.rect.y = self.coords(4, 0)[1]
         self.sprites.add(sprite5)
         sprite4 = pygame.sprite.Sprite()
         sprite4.image = load_image("door.png")
@@ -381,8 +381,8 @@ class Store(Room):
         sprite7 = pygame.sprite.Sprite()
         sprite7.image = load_image("wordr_store.JPG")
         sprite7.rect = sprite7.image.get_rect()
-        sprite7.rect.x = self.coords(5, 0)[0]
-        sprite7.rect.y = self.coords(5, 0)[1]
+        sprite7.rect.x = self.coords(4, 0)[0]
+        sprite7.rect.y = self.coords(4, 0)[1]
         self.sprites.add(sprite7)
         self.sprites.draw(self.screen)
         self.busy = [(0, 2), (2, 1), (3, 4), (4, 0), (4, 1), (4, 6), (5, 0), (5, 1), (5, 6), (6, 0), (6, 1), (6, 4)]
@@ -426,7 +426,7 @@ rooms = [start, finish, hall, bedroom, corridor, bathroom, kitchen, livingroom, 
 for room in rooms[2:]:
     room.set_view(0, 50, 100)
 running = True
-room = bedroom # для теста
+room = store # для теста
 pos_mouse = 0, 0
 pos_pla = 1, 1
 pos_sus = 3, 5
