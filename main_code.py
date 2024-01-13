@@ -113,7 +113,7 @@ class Hall(Room):
         self.sprites.add(sprite7)
         self.sprites.draw(self.screen)
         self.busy = [(3, 0), (6, 2), (0, 3), (4, 5), (0, 6), (1, 6), (3, 6), (4, 6)]
-        self.doors = {(3, 0): ((3, 5), 'corridor'), (3, 6): ((0, 0), 'finish'), (0, 3): ((5, 3), 'bathroom'), (6, 2): ((1, 2), 'store')}
+        self.doors = {(3, 0): ((3, 5), 'corridor'), (3, 6): ((0, 0), 'finish'), (0, 3): ((5, 3), 'kitchen'), (6, 2): ((1, 2), 'store')}
 
 
 class Bedroom(Room):
@@ -204,7 +204,7 @@ class Corridor(Room):
         self.sprites.add(sprite7)
         self.sprites.draw(self.screen)
         self.busy = [(3, 0), (5, 0), (6, 0), (0, 1), (6, 3), (0, 4), (3, 6), (6, 6)]
-        self.rooms = {(3, 0): ((3, 5), 'bedroom'), (3, 6): ((3, 1), 'hall'), (0, 1): ((5, 1), 'kitchen'), (6, 3): ((0, 3), 'bathroom')}
+        self.doors = {(3, 0): ((3, 5), 'bedroom'), (3, 6): ((3, 1), 'hall'), (0, 1): ((5, 1), 'kitchen'), (6, 3): ((1, 3), 'bathroom')}
     
     def render():
         pass
@@ -386,7 +386,7 @@ class Store(Room):
         self.sprites.add(sprite7)
         self.sprites.draw(self.screen)
         self.busy = [(0, 2), (2, 1), (3, 4), (4, 0), (4, 1), (4, 6), (5, 0), (5, 1), (5, 6), (6, 0), (6, 1), (6, 4)]
-        self.doors = {(0, 2): ((5, 2), 'hall')}
+        self.doors = {(0, 2): ((5, 2), 'hall')} # координаты двери: (координаты появления, комната появления)
     
     def render():
         pass
@@ -423,6 +423,7 @@ screen = pygame.display.set_mode(size)
 hall, bedroom, corridor, bathroom = Hall(), Bedroom(), Corridor(), Bathroom()
 kitchen, livingroom, store, start, finish = Kitchen(), Livingroom(), Store(), Start(), Finish()
 rooms = [start, finish, hall, bedroom, corridor, bathroom, kitchen, livingroom, store]
+get_room = {'hall': hall, 'bedroom': bedroom, 'corridor': corridor, 'bathroom': bathroom, 'kitchen': kitchen, 'livingroom':livingroom, 'store': store}
 for room in rooms[2:]:
     room.set_view(0, 50, 100)
 running = True
@@ -442,12 +443,16 @@ while running:
             if event.type == pygame.MOUSEMOTION:
                 pos_mouse = event.pos
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and room.get_cell(pos_mouse):
-                if room.is_near(pos_mouse[0], pos_mouse[1], pos_pla[0], pos_pla[1]) and pos_mouse in room.busy:
-                    x_mou, y_mou = room.get_cell(pos_mouse)
+                x_mou, y_mou = room.get_cell(pos_mouse)
+                if room.is_near(x_mou, y_mou, pos_pla[0], pos_pla[1]) and (x_mou, y_mou) in room.busy:
                     if (x_mou, y_mou) not in room.doors:
                         pass
                     else:
-                        pass
+                        pos_pla = room.doors[(x_mou, y_mou)][0]
+                        new_x, new_y = pos_pla[0], pos_pla[1]
+                        room = get_room[room.doors[(x_mou, y_mou)][1]]
+                        room.pla.rect.x = room.coords(new_x, new_y)[0]
+                        room.pla.rect.y = room.coords(new_x, new_y)[1]
             if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
                 new_x, new_y = pos_pla[0], pos_pla[1] - 1
                 if (new_x, new_y) not in room.busy and (new_x, new_y) in room.cor_bord:
