@@ -1,6 +1,7 @@
 import pygame
 import os
 import sys
+from menu import Start, Finish
 
 class Room:
     def __init__(self):
@@ -391,21 +392,6 @@ class Store(Room):
     def render():
         pass
 
-
-class Start:
-    def __init__(self):
-        pass
-        #self.screen = pygame.Surface((750, 750))
-        #font = pygame.font.Font(None, 15)
-        #text = font.render(str(self.board[j][i]), True, (0, 255, 0))
-        #screen.blit(text, (x1 + 3, y1 + 3))
-
-
-class Finish:
-    def __init__(self):
-        pass
-
-
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     # если файл не существует, то выходим
@@ -427,7 +413,7 @@ get_room = {'hall': hall, 'bedroom': bedroom, 'corridor': corridor, 'bathroom': 
 for room in rooms[2:]:
     room.set_view(0, 50, 100)
 running = True
-room = store # для теста
+room = start
 pos_mouse = 0, 0
 pos_pla = 1, 1
 pos_sus = 3, 5
@@ -436,7 +422,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         if room == start:
-            pass
+            start.draw_start(screen)
         elif room == finish:
             pass
         else:
@@ -477,6 +463,6 @@ while running:
                     pos_pla = (new_x, new_y)
                     room.pla.rect.x = room.coords(new_x, new_y)[0]
                     room.pla.rect.y = room.coords(new_x, new_y)[1]
-    screen.fill((255, 255, 255))
-    room.draw_room(screen)
+            screen.fill((255, 255, 255))
+            room.draw_room(screen)
     pygame.display.flip()
