@@ -18,6 +18,7 @@ class Start:
         font3 = pygame.font.Font(None, 50)
         text3 = font3.render('Таблица лидеров', True, (0, 0, 0))
         screen.blit(text3, (195, 353))
+        screen.blit(pygame.image.load("mega_gif.gif"), (0, 0))
 
 
 class Finish:

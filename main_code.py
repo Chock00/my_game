@@ -421,13 +421,19 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.MOUSEMOTION:
+            pos_mouse = event.pos
         if room == start:
+            screen.fill((255, 255, 255))
             start.draw_start(screen)
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if 200 <= pos_mouse[0] <= 500 and 200 <= pos_mouse[1] <= 300:
+                    print('start')
+                if 175 <= pos_mouse[0] <= 525 and 350 <= pos_mouse[1] <= 400:
+                    print('lid')
         elif room == finish:
             pass
         else:
-            if event.type == pygame.MOUSEMOTION:
-                pos_mouse = event.pos
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and room.get_cell(pos_mouse):
                 x_mou, y_mou = room.get_cell(pos_mouse)
                 if room.is_near(x_mou, y_mou, pos_pla[0], pos_pla[1]) and (x_mou, y_mou) in room.busy:
