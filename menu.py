@@ -32,26 +32,26 @@ class Finish:
         screen.fill((255, 255, 255))
         font1 = pygame.font.Font(None, 100)
         text1 = font1.render('Победа!', True, (255, 0, 0))
-        screen.blit(text1, (300, 100))
-        font2 = pygame.font.Font(None, 70)
-        text2 = font2.render('Ваш результат: ' + str(res) + 'секунд', True, (0, 0, 0))
-        screen.blit(text2, (200, 300))
+        screen.blit(text1, (220, 100))
+        font2 = pygame.font.Font(None, 45)
+        text2 = font2.render('Ваш результат: ' + str(res) + ' секунд', True, (0, 0, 0))
+        screen.blit(text2, (40, 300))
         do_end(res)
 
     def draw_bad(self, screen):
         screen.fill((255, 255, 255))
         font1 = pygame.font.Font(None, 100)
         text1 = font1.render('Неудача!', True, (255, 0, 0))
-        screen.blit(text1, (300, 100))
+        screen.blit(text1, (250, 100))
         font2 = pygame.font.Font(None, 70)
-        text2 = font2.render('Вас поймали. Суслик оказался не таким добрым, как выглядел', True, (0, 0, 0))
-        screen.blit(text2, (50, 300))
+        text2 = font2.render('Вас поймали и съели', True, (0, 0, 0))
+        screen.blit(text2, (100, 300))
 
 
 def do_end(res):
     connection = sqlite3.connect('top.db')
     cur = connection.cursor()
-    al = cur.execute('''INSERT INTO players(time,res) VALUES(?,?')''', (dt.datetime.now(), res))
+    al = cur.execute("INSERT INTO players(time,res) VALUES(?,?)", (dt.datetime.now(), res))
     connection.commit()
     connection.close()
 

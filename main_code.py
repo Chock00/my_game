@@ -428,14 +428,14 @@ def draw_key(keys):
     if keys == 6:
         t = 'Вы разобрали телевизор и нашли внутри ещё один ключ'
     if keys == 7:
-        t = 'Вы открыли шкаф и нашли огромный ключ. Кажется, он может подойти к двери'
+        t = 'Вы открыли шкаф и нашли огромный ключ'
     font1 = pygame.font.Font(None, 30)
     text = font1.render(t, True, (0, 0, 0))
     screen.blit(text, (10, 20))
 
 pygame.init()
 do_base()
-keys = 0
+keys = 7 # Отладка
 is_draw_key = 0
 pygame.display.set_caption('Суслик: остаться в живых 2')
 size = width, height = 7 * 100, 7 * 100 + 50
@@ -510,12 +510,17 @@ while running:
                             is_draw_key = 1
                             draw_key(keys)
                     else:
-                        pos_pla = room.doors[(x_mou, y_mou)][0]
-                        new_x, new_y = pos_pla[0], pos_pla[1]
-                        room = get_room[room.doors[(x_mou, y_mou)][1]]
-                        room.pla.rect.x = room.coords(new_x, new_y)[0]
-                        room.pla.rect.y = room.coords(new_x, new_y)[1]
-                        is_draw_key = 0
+                        try:
+                            pos_pla = room.doors[(x_mou, y_mou)][0]
+                            new_x, new_y = pos_pla[0], pos_pla[1]
+                            room = get_room[room.doors[(x_mou, y_mou)][1]]
+                            room.pla.rect.x = room.coords(new_x, new_y)[0]
+                            room.pla.rect.y = room.coords(new_x, new_y)[1]
+                            is_draw_key = 0
+                        except KeyError:
+                            room = finish
+                            hap = 1
+                            time_2 = time.time()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
                 new_x, new_y = pos_pla[0], pos_pla[1] - 1
                 if (new_x, new_y) not in room.busy and (new_x, new_y) in room.cor_bord:
@@ -540,8 +545,11 @@ while running:
                     pos_pla = (new_x, new_y)
                     room.pla.rect.x = room.coords(new_x, new_y)[0]
                     room.pla.rect.y = room.coords(new_x, new_y)[1]
-            screen.fill((255, 255, 255))
-            room.draw_room(screen)
-            if is_draw_key:
-                draw_key(keys)
+            try:
+                screen.fill((255, 255, 255))
+                room.draw_room(screen)
+                if is_draw_key:
+                    draw_key(keys)
+            except AttributeError:
+                pass
     pygame.display.flip()
