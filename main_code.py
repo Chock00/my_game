@@ -1,6 +1,8 @@
 import pygame
 import os
 import sys
+import time
+import sqlite3
 from menu import Start, Finish
 
 class Room:
@@ -114,7 +116,7 @@ class Hall(Room):
         self.sprites.add(sprite7)
         self.sprites.draw(self.screen)
         self.busy = [(3, 0), (6, 2), (0, 3), (4, 5), (0, 6), (1, 6), (3, 6), (4, 6)]
-        self.doors = {(3, 0): ((3, 5), 'corridor'), (3, 6): ((0, 0), 'finish'), (0, 3): ((5, 3), 'kitchen'), (6, 2): ((1, 2), 'store')}
+        self.doors = {(3, 0): ((3, 5), 'corridor'), (3, 6): ((0, 0), 'finish'), (0, 3): ((5, 3), 'livingroom'), (6, 2): ((1, 2), 'store')}
 
 
 class Bedroom(Room):
@@ -392,6 +394,7 @@ class Store(Room):
     def render():
         pass
 
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     # если файл не существует, то выходим
@@ -402,7 +405,38 @@ def load_image(name, colorkey=None):
     return image
 
 
+def do_base():
+    connection = sqlite3.connect('top.db')
+    cur = connection.cursor()
+    cur.execute('''CREATE TABLE IF NOT EXISTS players
+          (time TEXT, res INT)''')
+    connection.commit()
+    connection.close()
+
+
+def draw_key(keys):
+    if keys == 1:
+        t = 'Под картиной вы нашли хорошо спрятанный ключик'
+    if keys == 2:
+        t = 'Вы открыли шкаф ключом и нашли ещё один поменьше'
+    if keys == 3:
+        t = 'Вы открыли холодильник ключиком и нашли чистящее средство'
+    if keys == 4:
+        t = 'Вы засыпали в джакузи средство и нашли на дне крепкие ножницы'
+    if keys == 5:
+        t = 'Вы разрезали пакет ножницами и нашли в нем отвёртку'
+    if keys == 6:
+        t = 'Вы разобрали телевизор и нашли внутри ещё один ключ'
+    if keys == 7:
+        t = 'Вы открыли шкаф и нашли огромный ключ. Кажется, он может подойти к двери'
+    font1 = pygame.font.Font(None, 30)
+    text = font1.render(t, True, (0, 0, 0))
+    screen.blit(text, (10, 20))
+
 pygame.init()
+do_base()
+keys = 0
+is_draw_key = 0
 pygame.display.set_caption('Суслик: остаться в живых 2')
 size = width, height = 7 * 100, 7 * 100 + 50
 screen = pygame.display.set_mode(size)
@@ -428,23 +462,60 @@ while running:
             start.draw_start(screen)
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if 200 <= pos_mouse[0] <= 500 and 200 <= pos_mouse[1] <= 300:
-                    print('start')
+                    time_1 = time.time()
+                    time_2 = time.time()
+                    hap, sad = 0, 0
+                    room = bedroom
+                    pos_pla = 1, 1
                 if 175 <= pos_mouse[0] <= 525 and 350 <= pos_mouse[1] <= 400:
                     print('lid')
         elif room == finish:
-            pass
+            if hap:
+                screen.fill((255, 255, 255))
+                finish.draw_good(screen, time_2 - time_1)
+            else:
+                screen.fill((255, 255, 255))
+                finish.draw_bad(screen)
         else:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and room.get_cell(pos_mouse):
                 x_mou, y_mou = room.get_cell(pos_mouse)
                 if room.is_near(x_mou, y_mou, pos_pla[0], pos_pla[1]) and (x_mou, y_mou) in room.busy:
                     if (x_mou, y_mou) not in room.doors:
-                        pass
+                        if keys == 0 and (x_mou == 5 or x_mou == 6) and y_mou == 0 and isinstance(room, Corridor):
+                            keys += 1
+                            is_draw_key = 1
+                            draw_key(keys)
+                        if keys == 1 and (x_mou == 0 or x_mou == 1) and y_mou == 6 and isinstance(room, Hall):
+                            keys += 1
+                            is_draw_key = 1
+                            draw_key(keys)
+                        if keys == 2 and x_mou == 0 and y_mou == 0 and isinstance(room, Kitchen):
+                            keys += 1
+                            is_draw_key = 1
+                            draw_key(keys)
+                        if keys == 3 and (x_mou == 4 or x_mou == 5) and (y_mou == 1 or y_mou == 2) and isinstance(room, Bathroom):
+                            keys += 1 
+                            is_draw_key = 1
+                            draw_key(keys)
+                        if keys == 4 and x_mou == 3 and y_mou == 4 and isinstance(room, Store):
+                            keys += 1
+                            is_draw_key = 1
+                            draw_key(keys)
+                        if keys == 5 and (x_mou == 0 or x_mou == 1) and y_mou == 6 and isinstance(room, Livingroom):
+                            keys += 1
+                            is_draw_key = 1
+                            draw_key(keys)
+                        if keys == 6 and x_mou == 6 and (y_mou == 4 or y_mou == 5) and isinstance(room, Bedroom):
+                            keys += 1
+                            is_draw_key = 1
+                            draw_key(keys)
                     else:
                         pos_pla = room.doors[(x_mou, y_mou)][0]
                         new_x, new_y = pos_pla[0], pos_pla[1]
                         room = get_room[room.doors[(x_mou, y_mou)][1]]
                         room.pla.rect.x = room.coords(new_x, new_y)[0]
                         room.pla.rect.y = room.coords(new_x, new_y)[1]
+                        is_draw_key = 0
             if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
                 new_x, new_y = pos_pla[0], pos_pla[1] - 1
                 if (new_x, new_y) not in room.busy and (new_x, new_y) in room.cor_bord:
@@ -471,4 +542,6 @@ while running:
                     room.pla.rect.y = room.coords(new_x, new_y)[1]
             screen.fill((255, 255, 255))
             room.draw_room(screen)
+            if is_draw_key:
+                draw_key(keys)
     pygame.display.flip()
