@@ -3,7 +3,7 @@ import os
 import sys
 import time
 import sqlite3
-from menu import Start, Finish
+from menu import Start, Finish, draw_table
 
 class Room:
     def __init__(self):
@@ -467,15 +467,23 @@ while running:
                     hap, sad = 0, 0
                     room = bedroom
                     pos_pla = 1, 1
+                    first_end = 1
                 if 175 <= pos_mouse[0] <= 525 and 350 <= pos_mouse[1] <= 400:
-                    print('lid')
+                    room = 'table'
+        elif room == 'table':
+            draw_table(screen)
         elif room == finish:
+            if first_end:
+                f = 1
+            else:
+                f = 0
             if hap:
                 screen.fill((255, 255, 255))
-                finish.draw_good(screen, time_2 - time_1)
+                finish.draw_good(screen, time_2 - time_1, f)
             else:
                 screen.fill((255, 255, 255))
                 finish.draw_bad(screen)
+            first_end = 0
         else:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and room.get_cell(pos_mouse):
                 x_mou, y_mou = room.get_cell(pos_mouse)

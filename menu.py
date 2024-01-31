@@ -28,7 +28,7 @@ class Finish:
     def __init__(self):
         pass
 
-    def draw_good(self, screen, res):
+    def draw_good(self, screen, res, f):
         screen.fill((255, 255, 255))
         font1 = pygame.font.Font(None, 100)
         text1 = font1.render('Победа!', True, (255, 0, 0))
@@ -36,7 +36,8 @@ class Finish:
         font2 = pygame.font.Font(None, 45)
         text2 = font2.render('Ваш результат: ' + str(res) + ' секунд', True, (0, 0, 0))
         screen.blit(text2, (40, 300))
-        do_end(res)
+        if f:
+            do_end(res)
 
     def draw_bad(self, screen):
         screen.fill((255, 255, 255))
@@ -46,6 +47,25 @@ class Finish:
         font2 = pygame.font.Font(None, 70)
         text2 = font2.render('Вас поймали и съели', True, (0, 0, 0))
         screen.blit(text2, (100, 300))
+
+def draw_table(screen):
+    connection = sqlite3.connect('top.db')
+    cur = connection.cursor()
+    al = cur.execute("SELECT * FROM players").fetchall()
+    screen.fill((255, 255, 255))
+
+    font1 = pygame.font.Font(None, 40)
+    text1 = font1.render('Дата прохождения           Время прохождения', True, (0, 0, 0))
+    screen.blit(text1, (30, 40))
+    h = 1
+    for z in al:
+        font = pygame.font.Font(None, 30)
+        text = font.render(str(z[0]) + '                    ' + str(z[1]), True, (0, 0, 0))
+        screen.blit(text, (25, 50 + h * 30))
+        h += 1
+
+    connection.commit()
+    connection.close()
 
 
 def do_end(res):
