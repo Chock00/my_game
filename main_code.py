@@ -4,6 +4,7 @@ import sys
 import time
 import sqlite3
 from menu import Start, Finish, draw_table
+from random import choice
 
 class Room:
     def __init__(self):
@@ -20,8 +21,8 @@ class Room:
         self.sus = pygame.sprite.Sprite()
         self.sus.image = load_image("suslik.png")
         self.sus.rect = self.sus.image.get_rect()
-        self.sus.rect.x = self.coords(2, 3)[0]
-        self.sus.rect.y = self.coords(2, 3)[1]
+        self.sus.rect.x = self.coords(0, 5)[0]
+        self.sus.rect.y = self.coords(0, 5)[1]
         self.sus_gr.add(self.sus)
         self.pla_gr = pygame.sprite.Group()
         self.pla = pygame.sprite.Sprite()
@@ -155,9 +156,6 @@ class Bedroom(Room):
         self.sprites.draw(self.screen)
         self.busy = [(0, 0), (1, 0), (3, 3), (4, 3), (2, 4), (6, 4), (6, 5), (3, 6)]
         self.doors = {(3, 6): ((3, 1), 'corridor')}
-    
-    def render():
-        pass
 
 
 class Corridor(Room):
@@ -208,9 +206,6 @@ class Corridor(Room):
         self.sprites.draw(self.screen)
         self.busy = [(3, 0), (5, 0), (6, 0), (0, 1), (6, 3), (0, 4), (3, 6), (6, 6)]
         self.doors = {(3, 0): ((3, 5), 'bedroom'), (3, 6): ((3, 1), 'hall'), (0, 1): ((5, 1), 'kitchen'), (6, 3): ((1, 3), 'bathroom')}
-    
-    def render():
-        pass
 
 
 class Bathroom(Room):
@@ -249,9 +244,6 @@ class Bathroom(Room):
         self.sprites.draw(self.screen)
         self.busy = [(0, 3), (1, 6), (2, 6), (3, 4), (4, 1), (4, 2), (5, 1), (5, 2), (5, 6)]
         self.doors = {(0, 3): ((5, 3), 'corridor')}
-    
-    def render():
-        pass
 
 
 class Kitchen(Room):
@@ -296,9 +288,6 @@ class Kitchen(Room):
         self.sprites.draw(self.screen)
         self.busy = [(0, 0), (1, 2), (2, 0), (2, 2), (3, 0), (3, 2), (4, 0), (4, 2), (5, 0), (5, 6), (6, 0), (6, 1), (6, 6)]
         self.doors = {(6, 1): ((1, 1), 'corridor')}
-    
-    def render():
-        pass
 
 
 class Livingroom(Room):
@@ -337,9 +326,6 @@ class Livingroom(Room):
         self.sprites.draw(self.screen)
         self.busy = [(0, 0), (0, 6), (1, 0), (1, 6), (2, 0), (2, 2), (4, 0), (6, 3)]
         self.doors = {(6, 3): ((1, 3), 'hall')}
-    
-    def render():
-        pass
 
 
 class Store(Room):
@@ -390,9 +376,6 @@ class Store(Room):
         self.sprites.draw(self.screen)
         self.busy = [(0, 2), (2, 1), (3, 4), (4, 0), (4, 1), (4, 6), (5, 0), (5, 1), (5, 6), (6, 0), (6, 1), (6, 4)]
         self.doors = {(0, 2): ((5, 2), 'hall')} # координаты двери: (координаты появления, комната появления)
-    
-    def render():
-        pass
 
 
 def load_image(name, colorkey=None):
@@ -433,9 +416,37 @@ def draw_key(keys):
     text = font1.render(t, True, (0, 0, 0))
     screen.blit(text, (10, 20))
 
+def next_mov(sus_pos, pla_pos):
+    go = choice((0, 1))
+    if go == 0:
+        if sus_pos[0] != pla_pos[0]:
+            if sus_pos[0] > pla_pos[0]:
+                sus_pos = (sus_pos[0] - 1, sus_pos[1])
+            else:
+                sus_pos = (sus_pos[0] + 1, sus_pos[1])
+        else:
+            if sus_pos[1] > pla_pos[1]:
+                sus_pos = (sus_pos[0], sus_pos[1] - 1)
+            else:
+                sus_pos = (sus_pos[0], sus_pos[1] + 1)
+    else:
+        if sus_pos[1] != pla_pos[1]:
+            if sus_pos[1] > pla_pos[1]:
+                sus_pos = (sus_pos[0], sus_pos[1] - 1)
+            else:
+                sus_pos = (sus_pos[0], sus_pos[1] + 1)
+        else:
+            if sus_pos[0] > pla_pos[0]:
+                sus_pos = (sus_pos[0] - 1, sus_pos[1])
+            else:
+                sus_pos = (sus_pos[0] + 1, sus_pos[1])
+    return sus_pos, pla_pos
+        
+
+
 pygame.init()
 do_base()
-keys = 7 # Отладка
+keys = 0
 is_draw_key = 0
 pygame.display.set_caption('Суслик: остаться в живых 2')
 size = width, height = 7 * 100, 7 * 100 + 50
@@ -450,8 +461,24 @@ running = True
 room = start
 pos_mouse = 0, 0
 pos_pla = 1, 1
-pos_sus = 3, 5
+t_sus = 0
+pos_sus = 0, 5
+t_sus_0 = time.time()
 while running:
+    if room in rooms[2:]:
+        t_sus_1 = time.time()
+        if t_sus_1 - t_sus_0 > 2:
+            t_sus_0 = time.time()
+            pos_sus, pos_pla = next_mov(pos_sus, pos_pla)
+            room.sus.rect.x = room.coords(*pos_sus)[0]
+            room.sus.rect.y = room.coords(*pos_sus)[1]
+            screen.fill((255, 255, 255))
+            room.draw_room(screen)
+            if is_draw_key:
+                draw_key(keys)
+        if pos_sus == pos_pla:
+            room = finish
+            sad = 1
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -525,6 +552,9 @@ while running:
                             room.pla.rect.x = room.coords(new_x, new_y)[0]
                             room.pla.rect.y = room.coords(new_x, new_y)[1]
                             is_draw_key = 0
+                            pos_sus = (0, 5)
+                            room.sus.rect.x = room.coords(*pos_sus)[0]
+                            room.sus.rect.y = room.coords(*pos_sus)[1]
                         except KeyError:
                             room = finish
                             hap = 1

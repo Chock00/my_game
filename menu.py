@@ -34,8 +34,8 @@ class Finish:
         text1 = font1.render('Победа!', True, (255, 0, 0))
         screen.blit(text1, (220, 100))
         font2 = pygame.font.Font(None, 45)
-        text2 = font2.render('Ваш результат: ' + str(res) + ' секунд', True, (0, 0, 0))
-        screen.blit(text2, (40, 300))
+        text2 = font2.render('Ваш результат: ' + str(res)[:10] + ' секунд', True, (0, 0, 0))
+        screen.blit(text2, (90, 300))
         if f:
             do_end(res)
 
@@ -43,10 +43,11 @@ class Finish:
         screen.fill((255, 255, 255))
         font1 = pygame.font.Font(None, 100)
         text1 = font1.render('Неудача!', True, (255, 0, 0))
-        screen.blit(text1, (250, 100))
+        screen.blit(text1, (205, 100))
         font2 = pygame.font.Font(None, 70)
         text2 = font2.render('Вас поймали и съели', True, (0, 0, 0))
-        screen.blit(text2, (100, 300))
+        screen.blit(text2, (90, 300))
+
 
 def draw_table(screen):
     connection = sqlite3.connect('top.db')
@@ -57,6 +58,7 @@ def draw_table(screen):
     font1 = pygame.font.Font(None, 40)
     text1 = font1.render('Дата прохождения           Время прохождения', True, (0, 0, 0))
     screen.blit(text1, (30, 40))
+    al = sorted(al, key=lambda s: float(s[1]))[0:20]
     h = 1
     for z in al:
         font = pygame.font.Font(None, 30)
