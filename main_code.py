@@ -64,7 +64,7 @@ class Room:
                 x1 = self.left + self.cell_size * i
                 y1 = self.top + self.cell_size * j
                 w, h = self.cell_size, self.cell_size
-                pygame.draw.rect(screen, (0, 0, 0), ((x1, y1), (w, h)), 1)
+                pygame.draw.rect(screen, (150, 150, 150), ((x1, y1), (w, h)), 1)
         self.sprites.draw(screen)
         self.sus_gr.draw(screen)
         self.pla_gr.draw(screen)
