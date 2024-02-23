@@ -26,7 +26,7 @@ class Start:
 
 class Finish:
     def __init__(self):
-        pass
+        self.is_finish = 1
 
     def draw_good(self, screen, res, f):
         screen.fill((255, 255, 255))
@@ -54,6 +54,10 @@ def draw_table(screen):
     cur = connection.cursor()
     al = cur.execute("SELECT * FROM players").fetchall()
     screen.fill((255, 255, 255))
+    pygame.draw.rect(screen, (255, 0, 0), ((655, 10), (25, 25)))
+    font1 = pygame.font.Font(None, 35)
+    text1 = font1.render('X', True, (0, 0, 0))
+    screen.blit(text1, (658, 11))
 
     font1 = pygame.font.Font(None, 40)
     text1 = font1.render('Дата прохождения           Время прохождения', True, (0, 0, 0))

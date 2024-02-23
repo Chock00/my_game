@@ -3,7 +3,7 @@ import os
 import sys
 import time
 import sqlite3
-from menu import Start, Finish, draw_table
+from menu import Start, Finish, draw_table, load_image
 from random import choice
 
 class Room:
@@ -36,10 +36,6 @@ class Room:
             for j in range(0, 7):
                 self.cor_bord.append((i, j))
 
-    def set_view(self, left, top, cell_size):
-        self.left = left
-        self.top = top
-        self.cell_size = cell_size
     
     def get_cell(self, mouse_pos):
         if (self.left <= mouse_pos[0] <= self.left + self.width * self.cell_size and
@@ -116,7 +112,7 @@ class Hall(Room):
         sprite7.rect.y = self.coords(6, 2)[1]
         self.sprites.add(sprite7)
         self.sprites.draw(self.screen)
-        self.busy = [(3, 0), (6, 2), (0, 3), (4, 5), (0, 6), (1, 6), (3, 6), (4, 6)]
+        self.busy = [(3, 0), (6, 2), (0, 3), (4, 5), (0, 6), (1, 6), (3, 6), (4, 6), (5, 6)]
         self.doors = {(3, 0): ((3, 5), 'corridor'), (3, 6): ((0, 0), 'finish'), (0, 3): ((5, 3), 'livingroom'), (6, 2): ((1, 2), 'store')}
 
 
@@ -378,15 +374,6 @@ class Store(Room):
         self.doors = {(0, 2): ((5, 2), 'hall')} # координаты двери: (координаты появления, комната появления)
 
 
-def load_image(name, colorkey=None):
-    fullname = os.path.join('data', name)
-    # если файл не существует, то выходим
-    if not os.path.isfile(fullname):
-        print(f"Файл с изображением '{fullname}' не найден")
-        sys.exit()
-    image = pygame.image.load(fullname)
-    return image
-
 
 def do_base():
     connection = sqlite3.connect('top.db')
@@ -455,8 +442,6 @@ hall, bedroom, corridor, bathroom = Hall(), Bedroom(), Corridor(), Bathroom()
 kitchen, livingroom, store, start, finish = Kitchen(), Livingroom(), Store(), Start(), Finish()
 rooms = [start, finish, hall, bedroom, corridor, bathroom, kitchen, livingroom, store]
 get_room = {'hall': hall, 'bedroom': bedroom, 'corridor': corridor, 'bathroom': bathroom, 'kitchen': kitchen, 'livingroom':livingroom, 'store': store}
-for room in rooms[2:]:
-    room.set_view(0, 50, 100)
 running = True
 room = start
 pos_mouse = 0, 0
@@ -499,6 +484,9 @@ while running:
                     room = 'table'
         elif room == 'table':
             draw_table(screen)
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if 655 <= pos_mouse[0] <= 680 and 10 <= pos_mouse[1] <= 35:
+                    room = start
         elif room == finish:
             if first_end:
                 f = 1
@@ -545,7 +533,12 @@ while running:
                             is_draw_key = 1
                             draw_key(keys)
                     else:
-                        try:
+                        if (x_mou, y_mou) == (3, 6) and room == hall:
+                            if keys == 7:
+                                room = finish
+                                hap = 1
+                                time_2 = time.time()
+                        else:
                             pos_pla = room.doors[(x_mou, y_mou)][0]
                             new_x, new_y = pos_pla[0], pos_pla[1]
                             room = get_room[room.doors[(x_mou, y_mou)][1]]
@@ -555,10 +548,6 @@ while running:
                             pos_sus = (0, 5)
                             room.sus.rect.x = room.coords(*pos_sus)[0]
                             room.sus.rect.y = room.coords(*pos_sus)[1]
-                        except KeyError:
-                            room = finish
-                            hap = 1
-                            time_2 = time.time()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
                 new_x, new_y = pos_pla[0], pos_pla[1] - 1
                 if (new_x, new_y) not in room.busy and (new_x, new_y) in room.cor_bord:
