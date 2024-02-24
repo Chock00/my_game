@@ -31,10 +31,6 @@ class Room:
         self.pla.rect.x = self.coords(1, 1)[0]
         self.pla.rect.y = self.coords(1, 1)[1]
         self.pla_gr.add(self.pla)
-        self.cor_bord = []
-        for i in range(0, 7):
-            for j in range(0, 7):
-                self.cor_bord.append((i, j))
 
     
     def get_cell(self, mouse_pos):
@@ -69,48 +65,23 @@ class Room:
 class Hall(Room):
     def __init__(self):
         super().__init__()
-        sprite1 = pygame.sprite.Sprite()
-        sprite1.image = load_image("dirt_hall.png")
-        sprite1.rect = sprite1.image.get_rect()
-        sprite1.rect.x = self.coords(4, 5)[0]
-        sprite1.rect.y = self.coords(4, 5)[1]
-        self.sprites.add(sprite1)
-        sprite2 = pygame.sprite.Sprite()
-        sprite2.image = load_image("shoes_hall.jpg")
-        sprite2.rect = sprite2.image.get_rect()
-        sprite2.rect.x = self.coords(4, 6)[0]
-        sprite2.rect.y = self.coords(4, 6)[1]
-        self.sprites.add(sprite2)
-        sprite3 = pygame.sprite.Sprite()
-        sprite3.image = load_image("wordr_hall.jpg")
-        sprite3.rect = sprite3.image.get_rect()
-        sprite3.rect.x = self.coords(0, 6)[0]
-        sprite3.rect.y = self.coords(0, 6)[1]
-        self.sprites.add(sprite3)
-        sprite4 = pygame.sprite.Sprite()
-        sprite4.image = load_image("door.png")
-        sprite4.rect = sprite4.image.get_rect()
-        sprite4.rect.x = self.coords(3, 6)[0]
-        sprite4.rect.y = self.coords(3, 6)[1]
-        self.sprites.add(sprite4)
-        sprite5 = pygame.sprite.Sprite()
-        sprite5.image = load_image("door.png")
-        sprite5.rect = sprite5.image.get_rect()
-        sprite5.rect.x = self.coords(3, 0)[0]
-        sprite5.rect.y = self.coords(3, 0)[1]
-        self.sprites.add(sprite5)
-        sprite6 = pygame.sprite.Sprite()
-        sprite6.image = load_image("door.png")
-        sprite6.rect = sprite6.image.get_rect()
-        sprite6.rect.x = self.coords(0, 3)[0]
-        sprite6.rect.y = self.coords(0, 3)[1]
-        self.sprites.add(sprite6)
-        sprite7 = pygame.sprite.Sprite()
-        sprite7.image = load_image("door.png")
-        sprite7.rect = sprite7.image.get_rect()
-        sprite7.rect.x = self.coords(6, 2)[0]
-        sprite7.rect.y = self.coords(6, 2)[1]
-        self.sprites.add(sprite7)
+        hall_dict = {"dirt_hall.png": (4, 5), "shoes_hall.jpg": (4, 6), "wordr_hall.jpg": (0, 6), "door.png": [(3, 6), (3, 0), (0, 3), (6, 2)]}
+        for name in hall_dict.keys():
+            if isinstance(hall_dict[name], list):
+                for cor in hall_dict[name]:
+                    sprite = pygame.sprite.Sprite()
+                    sprite.image = load_image(name)
+                    sprite.rect = sprite.image.get_rect()
+                    sprite.rect.x = self.coords(cor[0], cor[1])[0]
+                    sprite.rect.y = self.coords(cor[0], cor[1])[1]
+                    self.sprites.add(sprite)
+            else:
+                sprite = pygame.sprite.Sprite()
+                sprite.image = load_image(name)
+                sprite.rect = sprite.image.get_rect()
+                sprite.rect.x = self.coords(hall_dict[name][0], hall_dict[name][1])[0]
+                sprite.rect.y = self.coords(hall_dict[name][0], hall_dict[name][1])[1]
+                self.sprites.add(sprite)
         self.sprites.draw(self.screen)
         self.busy = [(3, 0), (6, 2), (0, 3), (4, 5), (0, 6), (1, 6), (3, 6), (4, 6), (5, 6)]
         self.doors = {(3, 0): ((3, 5), 'corridor'), (3, 6): ((0, 0), 'finish'), (0, 3): ((5, 3), 'livingroom'), (6, 2): ((1, 2), 'store')}
@@ -119,36 +90,23 @@ class Hall(Room):
 class Bedroom(Room):
     def __init__(self):
         super().__init__()
-        sprite1 = pygame.sprite.Sprite()
-        sprite1.image = load_image("bed_bed.jpg")
-        sprite1.rect = sprite1.image.get_rect()
-        sprite1.rect.x = self.coords(0, 0)[0]
-        sprite1.rect.y = self.coords(0, 0)[1]
-        self.sprites.add(sprite1)
-        sprite2 = pygame.sprite.Sprite()
-        sprite2.image = load_image("mesa_bed.jpg")
-        sprite2.rect = sprite2.image.get_rect()
-        sprite2.rect.x = self.coords(3, 3)[0]
-        sprite2.rect.y = self.coords(3, 3)[1]
-        self.sprites.add(sprite2)
-        sprite3 = pygame.sprite.Sprite()
-        sprite3.image = load_image("sil_bed.jpg")
-        sprite3.rect = sprite3.image.get_rect()
-        sprite3.rect.x = self.coords(2, 4)[0]
-        sprite3.rect.y = self.coords(2, 4)[1]
-        self.sprites.add(sprite3)
-        sprite5 = pygame.sprite.Sprite()
-        sprite5.image = load_image("wordr_bed.png")
-        sprite5.rect = sprite5.image.get_rect()
-        sprite5.rect.x = self.coords(6, 4)[0]
-        sprite5.rect.y = self.coords(6, 4)[1]
-        self.sprites.add(sprite5)
-        sprite4 = pygame.sprite.Sprite()
-        sprite4.image = load_image("door.png")
-        sprite4.rect = sprite4.image.get_rect()
-        sprite4.rect.x = self.coords(3, 6)[0]
-        sprite4.rect.y = self.coords(3, 6)[1]
-        self.sprites.add(sprite4)
+        bedroom_dict = {"bed_bed.jpg": (0, 0), "mesa_bed.jpg": (3, 3), "sil_bed.jpg": (2, 4), "wordr_bed.png": (6, 4), "door.png": (3, 6)}
+        for name in bedroom_dict.keys():
+            if isinstance(bedroom_dict[name], list):
+                for cor in bedroom_dict[name]:
+                    sprite = pygame.sprite.Sprite()
+                    sprite.image = load_image(name)
+                    sprite.rect = sprite.image.get_rect()
+                    sprite.rect.x = self.coords(cor[0], cor[1])[0]
+                    sprite.rect.y = self.coords(cor[0], cor[1])[1]
+                    self.sprites.add(sprite)
+            else:
+                sprite = pygame.sprite.Sprite()
+                sprite.image = load_image(name)
+                sprite.rect = sprite.image.get_rect()
+                sprite.rect.x = self.coords(bedroom_dict[name][0], bedroom_dict[name][1])[0]
+                sprite.rect.y = self.coords(bedroom_dict[name][0], bedroom_dict[name][1])[1]
+                self.sprites.add(sprite)
         self.sprites.draw(self.screen)
         self.busy = [(0, 0), (1, 0), (3, 3), (4, 3), (2, 4), (6, 4), (6, 5), (3, 6)]
         self.doors = {(3, 6): ((3, 1), 'corridor')}
@@ -157,48 +115,23 @@ class Bedroom(Room):
 class Corridor(Room):
     def __init__(self):
         super().__init__()
-        sprite1 = pygame.sprite.Sprite()
-        sprite1.image = load_image("flow_cor.png")
-        sprite1.rect = sprite1.image.get_rect()
-        sprite1.rect.x = self.coords(0, 4)[0]
-        sprite1.rect.y = self.coords(0, 4)[1]
-        self.sprites.add(sprite1)
-        sprite2 = pygame.sprite.Sprite()
-        sprite2.image = load_image("pict_cor.png")
-        sprite2.rect = sprite2.image.get_rect()
-        sprite2.rect.x = self.coords(5, 0)[0]
-        sprite2.rect.y = self.coords(5, 0)[1]
-        self.sprites.add(sprite2)
-        sprite3 = pygame.sprite.Sprite()
-        sprite3.image = load_image("tumba_cor.png")
-        sprite3.rect = sprite3.image.get_rect()
-        sprite3.rect.x = self.coords(6, 6)[0]
-        sprite3.rect.y = self.coords(6, 6)[1]
-        self.sprites.add(sprite3)
-        sprite4 = pygame.sprite.Sprite()
-        sprite4.image = load_image("door.png")
-        sprite4.rect = sprite4.image.get_rect()
-        sprite4.rect.x = self.coords(0, 1)[0]
-        sprite4.rect.y = self.coords(0, 1)[1]
-        self.sprites.add(sprite4)
-        sprite5 = pygame.sprite.Sprite()
-        sprite5.image = load_image("door.png")
-        sprite5.rect = sprite5.image.get_rect()
-        sprite5.rect.x = self.coords(3, 0)[0]
-        sprite5.rect.y = self.coords(3, 0)[1]
-        self.sprites.add(sprite5)
-        sprite6 = pygame.sprite.Sprite()
-        sprite6.image = load_image("door.png")
-        sprite6.rect = sprite6.image.get_rect()
-        sprite6.rect.x = self.coords(6, 3)[0]
-        sprite6.rect.y = self.coords(6, 3)[1]
-        self.sprites.add(sprite6)
-        sprite7 = pygame.sprite.Sprite()
-        sprite7.image = load_image("door.png")
-        sprite7.rect = sprite7.image.get_rect()
-        sprite7.rect.x = self.coords(3, 6)[0]
-        sprite7.rect.y = self.coords(3, 6)[1]
-        self.sprites.add(sprite7)
+        corridor_dict = {"flow_cor.png": (0, 4), "pict_cor.png": (5, 0), "tumba_cor.png": (6, 6), "door.png": [(0, 1), (3, 0), (6, 3), (3, 6)]}
+        for name in corridor_dict.keys():
+            if isinstance(corridor_dict[name], list):
+                for cor in corridor_dict[name]:
+                    sprite = pygame.sprite.Sprite()
+                    sprite.image = load_image(name)
+                    sprite.rect = sprite.image.get_rect()
+                    sprite.rect.x = self.coords(cor[0], cor[1])[0]
+                    sprite.rect.y = self.coords(cor[0], cor[1])[1]
+                    self.sprites.add(sprite)
+            else:
+                sprite = pygame.sprite.Sprite()
+                sprite.image = load_image(name)
+                sprite.rect = sprite.image.get_rect()
+                sprite.rect.x = self.coords(corridor_dict[name][0], corridor_dict[name][1])[0]
+                sprite.rect.y = self.coords(corridor_dict[name][0], corridor_dict[name][1])[1]
+                self.sprites.add(sprite)
         self.sprites.draw(self.screen)
         self.busy = [(3, 0), (5, 0), (6, 0), (0, 1), (6, 3), (0, 4), (3, 6), (6, 6)]
         self.doors = {(3, 0): ((3, 5), 'bedroom'), (3, 6): ((3, 1), 'hall'), (0, 1): ((5, 1), 'kitchen'), (6, 3): ((1, 3), 'bathroom')}
@@ -207,36 +140,23 @@ class Corridor(Room):
 class Bathroom(Room):
     def __init__(self):
         super().__init__()
-        sprite1 = pygame.sprite.Sprite()
-        sprite1.image = load_image("bath_bath.jpg")
-        sprite1.rect = sprite1.image.get_rect()
-        sprite1.rect.x = self.coords(4, 1)[0]
-        sprite1.rect.y = self.coords(4, 1)[1]
-        self.sprites.add(sprite1)
-        sprite2 = pygame.sprite.Sprite()
-        sprite2.image = load_image("sink_bath.jpg")
-        sprite2.rect = sprite2.image.get_rect()
-        sprite2.rect.x = self.coords(5, 6)[0]
-        sprite2.rect.y = self.coords(5, 6)[1]
-        self.sprites.add(sprite2)
-        sprite3 = pygame.sprite.Sprite()
-        sprite3.image = load_image("water_bath.jpg")
-        sprite3.rect = sprite3.image.get_rect()
-        sprite3.rect.x = self.coords(3, 4)[0]
-        sprite3.rect.y = self.coords(3, 4)[1]
-        self.sprites.add(sprite3)
-        sprite5 = pygame.sprite.Sprite()
-        sprite5.image = load_image("wordr_bath.jpg")
-        sprite5.rect = sprite5.image.get_rect()
-        sprite5.rect.x = self.coords(1, 6)[0]
-        sprite5.rect.y = self.coords(1, 6)[1]
-        self.sprites.add(sprite5)
-        sprite4 = pygame.sprite.Sprite()
-        sprite4.image = load_image("door.png")
-        sprite4.rect = sprite3.image.get_rect()
-        sprite4.rect.x = self.coords(0, 3)[0]
-        sprite4.rect.y = self.coords(0, 3)[1]
-        self.sprites.add(sprite4)
+        bathroom_dict = {"bath_bath.jpg": (4, 1), "sink_bath.jpg": (5, 6), "water_bath.jpg": (3, 4), "wordr_bath.jpg": (1, 6), "door.png": (0, 3)}
+        for name in bathroom_dict.keys():
+            if isinstance(bathroom_dict[name], list):
+                for cor in bathroom_dict[name]:
+                    sprite = pygame.sprite.Sprite()
+                    sprite.image = load_image(name)
+                    sprite.rect = sprite.image.get_rect()
+                    sprite.rect.x = self.coords(cor[0], cor[1])[0]
+                    sprite.rect.y = self.coords(cor[0], cor[1])[1]
+                    self.sprites.add(sprite)
+            else:
+                sprite = pygame.sprite.Sprite()
+                sprite.image = load_image(name)
+                sprite.rect = sprite.image.get_rect()
+                sprite.rect.x = self.coords(bathroom_dict[name][0], bathroom_dict[name][1])[0]
+                sprite.rect.y = self.coords(bathroom_dict[name][0], bathroom_dict[name][1])[1]
+                self.sprites.add(sprite)
         self.sprites.draw(self.screen)
         self.busy = [(0, 3), (1, 6), (2, 6), (3, 4), (4, 1), (4, 2), (5, 1), (5, 2), (5, 6)]
         self.doors = {(0, 3): ((5, 3), 'corridor')}
@@ -245,80 +165,48 @@ class Bathroom(Room):
 class Kitchen(Room):
     def __init__(self):
         super().__init__()
-        sprite1 = pygame.sprite.Sprite()
-        sprite1.image = load_image("fridge_kitchen.png")
-        sprite1.rect = sprite1.image.get_rect()
-        sprite1.rect.x = self.coords(0, 0)[0]
-        sprite1.rect.y = self.coords(0, 0)[1]
-        self.sprites.add(sprite1)
-        sprite2 = pygame.sprite.Sprite()
-        sprite2.image = load_image("kitchen_kitchen.png")
-        sprite2.rect = sprite2.image.get_rect()
-        sprite2.rect.x = self.coords(2, 0)[0]
-        sprite2.rect.y = self.coords(2, 0)[1]
-        self.sprites.add(sprite2)
-        sprite3 = pygame.sprite.Sprite()
-        sprite3.image = load_image("mesa_kitchen.jpg")
-        sprite3.rect = sprite3.image.get_rect()
-        sprite3.rect.x = self.coords(1, 2)[0]
-        sprite3.rect.y = self.coords(1, 2)[1]
-        self.sprites.add(sprite3)
-        sprite5 = pygame.sprite.Sprite()
-        sprite5.image = load_image("sil_kitchen.jpg")
-        sprite5.rect = sprite5.image.get_rect()
-        sprite5.rect.x = self.coords(2, 4)[0]
-        sprite5.rect.y = self.coords(2, 4)[1]
-        self.sprites.add(sprite5)
-        sprite6 = pygame.sprite.Sprite()
-        sprite6.image = load_image("wordr_kitchen.jpg")
-        sprite6.rect = sprite6.image.get_rect()
-        sprite6.rect.x = self.coords(5, 6)[0]
-        sprite6.rect.y = self.coords(5, 6)[1]
-        self.sprites.add(sprite6)
-        sprite4 = pygame.sprite.Sprite()
-        sprite4.image = load_image("door.png")
-        sprite4.rect = sprite3.image.get_rect()
-        sprite4.rect.x = self.coords(6, 1)[0]
-        sprite4.rect.y = self.coords(6, 1)[1]
-        self.sprites.add(sprite4)
+        kitchen_dict = {"fridge_kitchen.png": (0, 0), "kitchen_kitchen.png": (2, 0), "mesa_kitchen.jpg": (1, 2), "sil_kitchen.jpg": (2, 4), "wordr_kitchen.jpg": (5, 6), "door.png": (6, 1)}
+        for name in kitchen_dict.keys():
+            if isinstance(kitchen_dict[name], list):
+                for cor in kitchen_dict[name]:
+                    sprite = pygame.sprite.Sprite()
+                    sprite.image = load_image(name)
+                    sprite.rect = sprite.image.get_rect()
+                    sprite.rect.x = self.coords(cor[0], cor[1])[0]
+                    sprite.rect.y = self.coords(cor[0], cor[1])[1]
+                    self.sprites.add(sprite)
+            else:
+                sprite = pygame.sprite.Sprite()
+                sprite.image = load_image(name)
+                sprite.rect = sprite.image.get_rect()
+                sprite.rect.x = self.coords(kitchen_dict[name][0], kitchen_dict[name][1])[0]
+                sprite.rect.y = self.coords(kitchen_dict[name][0], kitchen_dict[name][1])[1]
+                self.sprites.add(sprite)
         self.sprites.draw(self.screen)
-        self.busy = [(0, 0), (1, 2), (2, 0), (2, 2), (3, 0), (3, 2), (4, 0), (4, 2), (5, 0), (5, 6), (6, 0), (6, 1), (6, 6)]
+        self.busy = [(0, 0), (1, 2), (2, 0), (2, 2), (3, 0), (3, 2), (4, 0), (4, 2), (5, 0), (5, 6), (6, 0), (6, 1), (6, 6), (2, 4)]
         self.doors = {(6, 1): ((1, 1), 'corridor')}
 
 
 class Livingroom(Room):
     def __init__(self):
         super().__init__()
-        sprite1 = pygame.sprite.Sprite()
-        sprite1.image = load_image("mesa_liv.jpg")
-        sprite1.rect = sprite1.image.get_rect()
-        sprite1.rect.x = self.coords(2, 2)[0]
-        sprite1.rect.y = self.coords(2, 2)[1]
-        self.sprites.add(sprite1)
-        sprite2 = pygame.sprite.Sprite()
-        sprite2.image = load_image("sofa_liv.png")
-        sprite2.rect = sprite2.image.get_rect()
-        sprite2.rect.x = self.coords(0, 0)[0]
-        sprite2.rect.y = self.coords(0, 0)[1]
-        self.sprites.add(sprite2)
-        sprite3 = pygame.sprite.Sprite()
-        sprite3.image = load_image("tel_liv.jpg")
-        sprite3.rect = sprite3.image.get_rect()
-        sprite3.rect.x = self.coords(0, 6)[0]
-        sprite3.rect.y = self.coords(0, 6)[1]
-        self.sprites.add(sprite3)
-        sprite5 = pygame.sprite.Sprite()
-        sprite5.image = load_image("tumba_liv.jpg")
-        sprite5.rect = sprite5.image.get_rect()
-        sprite5.rect.x = self.coords(4, 0)[0]
-        sprite5.rect.y = self.coords(4, 0)[1]
-        self.sprites.add(sprite5)
-        sprite4 = pygame.sprite.Sprite()
-        sprite4.image = load_image("door.png")
-        sprite4.rect = sprite3.image.get_rect()
-        sprite4.rect.x = self.coords(6, 3)[0]
-        sprite4.rect.y = self.coords(6, 3)[1]
-        self.sprites.add(sprite4)
+        livingroom_dict = {"mesa_liv.jpg": (2, 2), "sofa_liv.png": (0, 0), "tel_liv.jpg": (0, 6), "tumba_liv.jpg": (4, 0), "door.png": (6, 3)}
+        for name in livingroom_dict.keys():
+            if isinstance(livingroom_dict[name], list):
+                for cor in livingroom_dict[name]:
+                    sprite = pygame.sprite.Sprite()
+                    sprite.image = load_image(name)
+                    sprite.rect = sprite.image.get_rect()
+                    sprite.rect.x = self.coords(cor[0], cor[1])[0]
+                    sprite.rect.y = self.coords(cor[0], cor[1])[1]
+                    self.sprites.add(sprite)
+            else:
+                sprite = pygame.sprite.Sprite()
+                sprite.image = load_image(name)
+                sprite.rect = sprite.image.get_rect()
+                sprite.rect.x = self.coords(livingroom_dict[name][0], livingroom_dict[name][1])[0]
+                sprite.rect.y = self.coords(livingroom_dict[name][0], livingroom_dict[name][1])[1]
+                self.sprites.add(sprite)
         self.sprites.draw(self.screen)
         self.busy = [(0, 0), (0, 6), (1, 0), (1, 6), (2, 0), (2, 2), (4, 0), (6, 3)]
         self.doors = {(6, 3): ((1, 3), 'hall')}
@@ -327,48 +215,23 @@ class Livingroom(Room):
 class Store(Room):
     def __init__(self):
         super().__init__()
-        sprite1 = pygame.sprite.Sprite()
-        sprite1.image = load_image("bag_store.png")
-        sprite1.rect = sprite1.image.get_rect()
-        sprite1.rect.x = self.coords(4, 6)[0]
-        sprite1.rect.y = self.coords(4, 6)[1]
-        self.sprites.add(sprite1)
-        sprite2 = pygame.sprite.Sprite()
-        sprite2.image = load_image("case_store.png")
-        sprite2.rect = sprite2.image.get_rect()
-        sprite2.rect.x = self.coords(5, 6)[0]
-        sprite2.rect.y = self.coords(5, 6)[1]
-        self.sprites.add(sprite2)
-        sprite3 = pygame.sprite.Sprite()
-        sprite3.image = load_image("clothes_store.png")
-        sprite3.rect = sprite3.image.get_rect()
-        sprite3.rect.x = self.coords(2, 1)[0]
-        sprite3.rect.y = self.coords(2, 1)[1]
-        self.sprites.add(sprite3)
-        sprite4 = pygame.sprite.Sprite()
-        sprite4.image = load_image("door.png")
-        sprite4.rect = sprite3.image.get_rect()
-        sprite4.rect.x = self.coords(0, 2)[0]
-        sprite4.rect.y = self.coords(0, 2)[1]
-        self.sprites.add(sprite4)
-        sprite5 = pygame.sprite.Sprite()
-        sprite5.image = load_image("rub_store.png")
-        sprite5.rect = sprite5.image.get_rect()
-        sprite5.rect.x = self.coords(3, 4)[0]
-        sprite5.rect.y = self.coords(3, 4)[1]
-        self.sprites.add(sprite5)
-        sprite6 = pygame.sprite.Sprite()
-        sprite6.image = load_image("trap_store.jpg")
-        sprite6.rect = sprite6.image.get_rect()
-        sprite6.rect.x = self.coords(6, 4)[0]
-        sprite6.rect.y = self.coords(6, 4)[1]
-        self.sprites.add(sprite6)
-        sprite7 = pygame.sprite.Sprite()
-        sprite7.image = load_image("wordr_store.JPG")
-        sprite7.rect = sprite7.image.get_rect()
-        sprite7.rect.x = self.coords(4, 0)[0]
-        sprite7.rect.y = self.coords(4, 0)[1]
-        self.sprites.add(sprite7)
+        store_dict = {"bag_store.png": (4, 6), "case_store.png": (5, 6), "clothes_store.png": (2, 1), "door.png": (0, 2), "rub_store.png": (3, 4), "trap_store.jpg": (6, 4), "wordr_store.JPG": (4, 0)}
+        for name in store_dict.keys():
+            if isinstance(store_dict[name], list):
+                for cor in store_dict[name]:
+                    sprite = pygame.sprite.Sprite()
+                    sprite.image = load_image(name)
+                    sprite.rect = sprite.image.get_rect()
+                    sprite.rect.x = self.coords(cor[0], cor[1])[0]
+                    sprite.rect.y = self.coords(cor[0], cor[1])[1]
+                    self.sprites.add(sprite)
+            else:
+                sprite = pygame.sprite.Sprite()
+                sprite.image = load_image(name)
+                sprite.rect = sprite.image.get_rect()
+                sprite.rect.x = self.coords(store_dict[name][0], store_dict[name][1])[0]
+                sprite.rect.y = self.coords(store_dict[name][0], store_dict[name][1])[1]
+                self.sprites.add(sprite)
         self.sprites.draw(self.screen)
         self.busy = [(0, 2), (2, 1), (3, 4), (4, 0), (4, 1), (4, 6), (5, 0), (5, 1), (5, 6), (6, 0), (6, 1), (6, 4)]
         self.doors = {(0, 2): ((5, 2), 'hall')} # координаты двери: (координаты появления, комната появления)
@@ -487,18 +350,6 @@ while running:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if 655 <= pos_mouse[0] <= 680 and 10 <= pos_mouse[1] <= 35:
                     room = start
-        elif room == finish:
-            if first_end:
-                f = 1
-            else:
-                f = 0
-            if hap:
-                screen.fill((255, 255, 255))
-                finish.draw_good(screen, time_2 - time_1, f)
-            else:
-                screen.fill((255, 255, 255))
-                finish.draw_bad(screen)
-            first_end = 0
         else:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and room.get_cell(pos_mouse):
                 x_mou, y_mou = room.get_cell(pos_mouse)
@@ -550,33 +401,48 @@ while running:
                             room.sus.rect.y = room.coords(*pos_sus)[1]
             if event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
                 new_x, new_y = pos_pla[0], pos_pla[1] - 1
-                if (new_x, new_y) not in room.busy and (new_x, new_y) in room.cor_bord:
+                if (new_x, new_y) not in room.busy and 0 <= new_x <= 6 and 0 <= new_y <= 6:
                     pos_pla = (new_x, new_y)
                     room.pla.rect.x = room.coords(new_x, new_y)[0]
                     room.pla.rect.y = room.coords(new_x, new_y)[1]
             if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
                 new_x, new_y = pos_pla[0], pos_pla[1] + 1
-                if (new_x, new_y) not in room.busy and (new_x, new_y) in room.cor_bord:
+                if (new_x, new_y) not in room.busy and 0 <= new_x <= 6 and 0 <= new_y <= 6:
                     pos_pla = (new_x, new_y)
                     room.pla.rect.x = room.coords(new_x, new_y)[0]
                     room.pla.rect.y = room.coords(new_x, new_y)[1]
             if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
                 new_x, new_y = pos_pla[0] - 1, pos_pla[1]
-                if (new_x, new_y) not in room.busy and (new_x, new_y) in room.cor_bord:
+                if (new_x, new_y) not in room.busy and 0 <= new_x <= 6 and 0 <= new_y <= 6:
                     pos_pla = (new_x, new_y)
                     room.pla.rect.x = room.coords(new_x, new_y)[0]
                     room.pla.rect.y = room.coords(new_x, new_y)[1]
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
                 new_x, new_y = pos_pla[0] + 1, pos_pla[1]
-                if (new_x, new_y) not in room.busy and (new_x, new_y) in room.cor_bord:
+                if (new_x, new_y) not in room.busy and 0 <= new_x <= 6 and 0 <= new_y <= 6:
                     pos_pla = (new_x, new_y)
                     room.pla.rect.x = room.coords(new_x, new_y)[0]
                     room.pla.rect.y = room.coords(new_x, new_y)[1]
-            try:
+    try:
+        if room in rooms[2:]:
+            screen.fill((255, 255, 255))
+            room.draw_room(screen)
+            if is_draw_key:
+                draw_key(keys)
+        elif room == finish:
+            if first_end:
+                f = 1
+            else:
+                f = 0
+            if hap:
                 screen.fill((255, 255, 255))
-                room.draw_room(screen)
-                if is_draw_key:
-                    draw_key(keys)
-            except AttributeError:
-                pass
+                finish.draw_good(screen, time_2 - time_1, f)
+            else:
+                screen.fill((255, 255, 255))
+                finish.draw_bad(screen)
+            first_end = 0
+    except AttributeError:
+        pass
+    
     pygame.display.flip()
+pygame.quit()
