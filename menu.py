@@ -36,6 +36,10 @@ class Finish:
         font2 = pygame.font.Font(None, 45)
         text2 = font2.render('Ваш результат: ' + str(res)[:10] + ' секунд', True, (0, 0, 0))
         screen.blit(text2, (90, 300))
+        pygame.draw.rect(screen, (255, 0, 0), ((655, 10), (25, 25)))
+        font1 = pygame.font.Font(None, 35)
+        text1 = font1.render('X', True, (0, 0, 0))
+        screen.blit(text1, (658, 11))
         if f:
             do_end(res)
 
@@ -47,6 +51,10 @@ class Finish:
         font2 = pygame.font.Font(None, 70)
         text2 = font2.render('Вас поймали и съели', True, (0, 0, 0))
         screen.blit(text2, (90, 300))
+        pygame.draw.rect(screen, (255, 0, 0), ((655, 10), (25, 25)))
+        font1 = pygame.font.Font(None, 35)
+        text1 = font1.render('X', True, (0, 0, 0))
+        screen.blit(text1, (658, 11))
 
 
 def draw_table(screen):
@@ -58,7 +66,6 @@ def draw_table(screen):
     font1 = pygame.font.Font(None, 35)
     text1 = font1.render('X', True, (0, 0, 0))
     screen.blit(text1, (658, 11))
-
     font1 = pygame.font.Font(None, 40)
     text1 = font1.render('Дата прохождения           Время прохождения', True, (0, 0, 0))
     screen.blit(text1, (30, 40))

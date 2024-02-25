@@ -262,9 +262,9 @@ def draw_key(keys):
         t = 'Вы разобрали телевизор и нашли внутри ещё один ключ'
     if keys == 7:
         t = 'Вы открыли шкаф и нашли огромный ключ'
-    font1 = pygame.font.Font(None, 30)
+    font1 = pygame.font.Font(None, 25)
     text = font1.render(t, True, (0, 0, 0))
-    screen.blit(text, (10, 20))
+    screen.blit(text, (35, 25))
 
 def next_mov(sus_pos, pla_pos):
     go = choice((0, 1))
@@ -293,6 +293,10 @@ def next_mov(sus_pos, pla_pos):
     return sus_pos, pla_pos
         
 
+def draw_progress(screen, k):
+    pygame.draw.rect(screen, (0, 0, 0), ((2, 5), (696, 10)), 2)
+    pygame.draw.rect(screen, (0, 255, 0), ((3, 6), (k * 99, 8)))
+
 
 pygame.init()
 do_base()
@@ -313,28 +317,12 @@ t_sus = 0
 pos_sus = 0, 5
 t_sus_0 = time.time()
 while running:
-    if room in rooms[2:]:
-        t_sus_1 = time.time()
-        if t_sus_1 - t_sus_0 > 2:
-            t_sus_0 = time.time()
-            pos_sus, pos_pla = next_mov(pos_sus, pos_pla)
-            room.sus.rect.x = room.coords(*pos_sus)[0]
-            room.sus.rect.y = room.coords(*pos_sus)[1]
-            screen.fill((255, 255, 255))
-            room.draw_room(screen)
-            if is_draw_key:
-                draw_key(keys)
-        if pos_sus == pos_pla:
-            room = finish
-            sad = 1
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
         if event.type == pygame.MOUSEMOTION:
             pos_mouse = event.pos
         if room == start:
-            screen.fill((255, 255, 255))
-            start.draw_start(screen)
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if 200 <= pos_mouse[0] <= 500 and 200 <= pos_mouse[1] <= 300:
                     time_1 = time.time()
@@ -343,10 +331,16 @@ while running:
                     room = bedroom
                     pos_pla = 1, 1
                     first_end = 1
+                    pos_sus = 0, 5
+                    keys = 0
+                    is_draw_key = 0
+                    room.pla.rect.x = room.coords(pos_pla[0], pos_pla[1])[0]
+                    room.pla.rect.y = room.coords(pos_pla[0], pos_pla[1])[1]
+                    room.sus.rect.x = room.coords(pos_sus[0], pos_sus[1])[0]
+                    room.sus.rect.y = room.coords(pos_sus[0], pos_sus[1])[1]
                 if 175 <= pos_mouse[0] <= 525 and 350 <= pos_mouse[1] <= 400:
                     room = 'table'
-        elif room == 'table':
-            draw_table(screen)
+        elif room == 'table' or room == finish:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if 655 <= pos_mouse[0] <= 680 and 10 <= pos_mouse[1] <= 35:
                     room = start
@@ -423,26 +417,39 @@ while running:
                     pos_pla = (new_x, new_y)
                     room.pla.rect.x = room.coords(new_x, new_y)[0]
                     room.pla.rect.y = room.coords(new_x, new_y)[1]
-    try:
-        if room in rooms[2:]:
+    if room in rooms[2:]:
+        screen.fill((255, 255, 255))
+        room.draw_room(screen)
+        if is_draw_key:
+            draw_key(keys)
+        draw_progress(screen, keys)
+    elif room == finish:
+        if first_end:
+            f = 1
+        else:
+            f = 0
+        if hap:
             screen.fill((255, 255, 255))
-            room.draw_room(screen)
-            if is_draw_key:
-                draw_key(keys)
-        elif room == finish:
-            if first_end:
-                f = 1
-            else:
-                f = 0
-            if hap:
-                screen.fill((255, 255, 255))
-                finish.draw_good(screen, time_2 - time_1, f)
-            else:
-                screen.fill((255, 255, 255))
-                finish.draw_bad(screen)
-            first_end = 0
-    except AttributeError:
-        pass
-    
+            finish.draw_good(screen, time_2 - time_1, f)
+        else:
+            screen.fill((255, 255, 255))
+            finish.draw_bad(screen)
+        first_end = 0
+    elif room == start:
+        screen.fill((255, 255, 255))
+        start.draw_start(screen)
+    else:
+        screen.fill((255, 255, 255))
+        draw_table(screen)
+    if room in rooms[2:]:
+        t_sus_1 = time.time()
+        if t_sus_1 - t_sus_0 > 2:
+            t_sus_0 = time.time()
+            pos_sus, pos_pla = next_mov(pos_sus, pos_pla)
+            room.sus.rect.x = room.coords(*pos_sus)[0]
+            room.sus.rect.y = room.coords(*pos_sus)[1]
+        if pos_sus == pos_pla:
+            room = finish
+            sad = 1
     pygame.display.flip()
 pygame.quit()
